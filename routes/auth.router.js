@@ -1,21 +1,24 @@
 const express = require("express");
 const router = express.Router();
-const createError = require("http-errors");
+const createError = require("http-errors"); // creates an error object
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const User = require("../models/user.model");
+const mongoose = require('mongoose');
+
 
 // HELPER FUNCTIONS
+// MIDDLEWARE FUNCTIONS TO VALIDATE
 const {
   isLoggedIn,
   isNotLoggedIn,
-  validationLogin
+  validationLogin,
+  validationSignup
 } = require("../helpers/middlewares");
 
 // POST '/auth/signup'
-router.post('/signup', isNotLoggedIn, validationLogin, (req, res, next) => {
-  const { username, password } = req.body;
-
+router.post('/signup', isNotLoggedIn, validationSignup, (req, res, next) => {
+  const { username, password, email } = req.body;
   User.findOne({ username })
     .then( (foundUser) => {
 
@@ -28,11 +31,13 @@ router.post('/signup', isNotLoggedIn, validationLogin, (req, res, next) => {
         const salt = bcrypt.genSaltSync(saltRounds);
         const encryptedPassword = bcrypt.hashSync(password, salt);
 
-        User.create( { username, password: encryptedPassword })
+        User.create( { username, password: encryptedPassword, email })
           .then( (createdUser) => {
+            console.log('createdUser', createdUser)
             // set the `req.session.currentUser` using newly created user object, to trigger creation of the session and cookie
             createdUser.password = "*";
             req.session.currentUser = createdUser; // automatically logs in the user by setting the session/cookie
+            console.log('req.session.currentUser', req.session.currentUser)
 
             res
               .status(201) // Created
@@ -50,10 +55,6 @@ router.post('/signup', isNotLoggedIn, validationLogin, (req, res, next) => {
 
 
 })
-
-
-
-
 // POST '/auth/login'
 router.post('/login', isNotLoggedIn, validationLogin, (req, res, next) => {
   const { username, password } = req.body;
@@ -71,14 +72,13 @@ router.post('/login', isNotLoggedIn, validationLogin, (req, res, next) => {
         // set the `req.session.currentUser`, to trigger creation of the session
         user.password = "*";
         req.session.currentUser = user;
-
         res
           .status(200)
           .json(user);
 
       }
       else {
-        next( createError(401) ); // Unathorized
+        next( createError(401) ); // Unauthorized
       }
 
     })
@@ -86,8 +86,6 @@ router.post('/login', isNotLoggedIn, validationLogin, (req, res, next) => {
       next( createError(err)  );
     });
 })
-
-
 // GET '/auth/logout'
 router.get('/logout',  isLoggedIn, (req, res, next) => {
   req.session.destroy( function(err){
@@ -100,18 +98,34 @@ router.get('/logout',  isLoggedIn, (req, res, next) => {
       .send();
   } )
 })
-
-
-
-// GET '/auth/me'
+// GET '/auth/me' --> if user is logged in or not
 router.get('/me', isLoggedIn, (req, res, next) => {
   const currentUserSessionData = req.session.currentUser;
-
   res
     .status(200)
     .json(currentUserSessionData);
 
 })
 
+// GET 'auth/user' update user information
+router.get('/user', isLoggedIn, (req,res,next) => {
+  const userId = req.session.currentUser._id
+  console.log('userId', userId)
+  if(!mongoose.Types.ObjectId.isValid(userId)){
+    res
+    .status(400)
+    .json({message: "specified id is not valid"})
+    return
+  }
+  User.findById( userId )
+  .then((foundUser) =>{
+    res
+    .status(200)
+    .json(foundUser)
+  })
+  .catch((err) =>{
+    next( createError(err)  );
+  })
+})
 
 module.exports = router;

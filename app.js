@@ -10,7 +10,8 @@ const cors = require('cors');
 require('dotenv').config();
 
 const authRouter = require('./routes/auth.router');
-
+const productRouter = require('./routes/product.router');
+const shopRouter = require('./routes/shop.router')
 
 // MONGOOSE CONNECTION
 mongoose
@@ -60,12 +61,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // ROUTER MIDDLEWARE
 app.use('/auth', authRouter);
-
-
+app.use('/api', productRouter);
+app.use('/api', shopRouter)
 
 // ERROR HANDLING
 //  Catch 404 and respond with error message
 // Shows a 404 error with a message when no route is found for the request
+// SET UP A 404 PAGE
 app.use((req, res, next) => {
   res
     .status(404)
@@ -74,14 +76,19 @@ app.use((req, res, next) => {
 });
 
 
-
+// handles errors throughout the application
+// instead of req, res, next --> err, req, res, next 
+// with err --> we convert it into global error handler
 // Catch `next(err)` calls
 app.use((err, req, res, next) => {
   // always log the error
+  // consoles the error
   console.error('ERROR', req.method, req.path, err);
 
   // only render if the error ocurred before sending the response
   if (!res.headersSent) {
+    // if no error is provided --> 500
+    // you can activate it by next (err)
     const statusError = err.status || '500';
     res.status(statusError).json(err);
   }
