@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const router  = express.Router();
-const uploader = require("./../configs/cloudinary-setup");
+const uploader = require("./../config/cloudinary-setup");
 const Product = require("../models/product.model");
 const Shop = require("../models/shop.model");
 
