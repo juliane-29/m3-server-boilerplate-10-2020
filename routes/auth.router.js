@@ -128,4 +128,39 @@ router.get('/user', isLoggedIn, (req,res,next) => {
   })
 })
 
+router.put('/user/:id', (req,res,next) =>{
+  const {id} = req.params;
+  const { username,
+          email,
+          firstName,
+          lastName, 
+          image,
+          bio} = req.body
+
+  if(!mongoose.Types.ObjectId.isValid(id)){
+    res
+    .status(400)
+    .json({message: "specified id is not valid"})
+    return
+  }
+
+  User.findByIdAndUpdate(id, { username, 
+                               email,
+                               firstName,
+                               lastName, 
+                               image,
+                               bio}, {new: true} )
+  .then(() =>{
+    res
+    .status(200)
+    .send();
+  })
+  .catch((err) => {
+    res
+    .status(500)
+    .json(err)
+  })
+})
+
+
 module.exports = router;

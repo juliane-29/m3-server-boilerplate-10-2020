@@ -98,8 +98,11 @@ router.get('/shops/:id', (req,res,next) =>{
 
   Shop
   .findById(id)
+  .populate('owner')
   .then((foundShop) => {
-    res.status(200).json(foundShop);
+    res
+    .status(200)
+    .json(foundShop);
   })
   .catch((err) => {
     res
@@ -176,9 +179,24 @@ router.delete('/shops/:id', (req,res,next) =>{
   
     Shop.findByIdAndRemove(id)
     .then((removedShop)=>{
-      res
-      .status(202)
-      .send(`Shop ${removedShop.shopName} was removed`)
+    console.log('removedShop.owner', removedShop.owner)
+    
+    User.findByIdAndUpdate(owner, 
+    {shop: "", shopOwner: false}, {new:true})
+    .then((updatedUser) =>{
+
+          req.session.currentUser = updatedUser;
+          console.log('updatedUser', updatedUser)
+
+          res
+          .status(201)
+          .json(updatedUser);
+    })
+    .catch((err)=> {
+        res
+          .status(500)  
+          .json(err)
+    })
     })
     .catch((err) => {
       res
@@ -187,4 +205,4 @@ router.delete('/shops/:id', (req,res,next) =>{
     })
 })
 
-module.exports = router; 
+module.exports = router;
