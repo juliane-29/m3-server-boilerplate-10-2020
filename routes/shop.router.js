@@ -6,9 +6,10 @@ const uploader = require("./../config/cloudinary-setup");
 
 const Shop = require("../models/shop.model");
 const User = require("../models/user.model");
+const Product = require('../models/product.model');
 
 //Cloudinary File Upload
-router.post("/upload", uploader.single("image"), (req, res, next) => {
+router.post("/upload", uploader.single("logo"), (req, res, next) => {
     console.log("file is: ", req.file);
   
     if (!req.file) {
@@ -100,6 +101,15 @@ router.get('/shops/:id', (req,res,next) =>{
   .findById(id)
   .populate('owner')
   .then((foundShop) => {
+    console.log('foundShop', foundShop)
+    console.log('foundShop.products', foundShop.products)
+    foundShop.products.map((productObj, index) =>{
+       Product.findById(productObj)
+       .then((foundProducts) =>{
+        console.log('foundProducts', foundProducts)
+         // receive products from the shopowner
+    })
+    })
     res
     .status(200)
     .json(foundShop);
@@ -180,14 +190,12 @@ router.delete('/shops/:id', (req,res,next) =>{
     Shop.findByIdAndRemove(id)
     .then((removedShop)=>{
     console.log('removedShop.owner', removedShop.owner)
-    
-    User.findByIdAndUpdate(owner, 
+    const id = removedShop.owner
+    User.findOneAndUpdate(id, 
     {shop: "", shopOwner: false}, {new:true})
     .then((updatedUser) =>{
-
           req.session.currentUser = updatedUser;
           console.log('updatedUser', updatedUser)
-
           res
           .status(201)
           .json(updatedUser);

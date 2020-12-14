@@ -108,16 +108,16 @@ router.get('/me', isLoggedIn, (req, res, next) => {
 })
 
 // GET 'auth/user' update user information
-router.get('/user', isLoggedIn, (req,res,next) => {
-  const userId = req.session.currentUser._id
-  console.log('userId', userId)
-  if(!mongoose.Types.ObjectId.isValid(userId)){
+router.get('/user/:id', isLoggedIn, (req,res,next) => {
+  const id = req.session.currentUser._id
+  console.log('id', id)
+  if(!mongoose.Types.ObjectId.isValid(id)){
     res
     .status(400)
     .json({message: "specified id is not valid"})
     return
   }
-  User.findById( userId )
+  User.findById( id )
   .then((foundUser) =>{
     res
     .status(200)
@@ -129,13 +129,14 @@ router.get('/user', isLoggedIn, (req,res,next) => {
 })
 
 router.put('/user/:id', (req,res,next) =>{
-  const {id} = req.params;
+  const id = req.session.currentUser._id
   const { username,
           email,
           firstName,
           lastName, 
           image,
           bio} = req.body
+  console.log('req.body', req.body)
 
   if(!mongoose.Types.ObjectId.isValid(id)){
     res

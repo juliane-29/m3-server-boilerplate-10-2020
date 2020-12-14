@@ -165,10 +165,24 @@ router.delete('/products/:id', (req,res,next) =>{
   }
 
   Product.findByIdAndRemove(id)
+  .populate("shop") // get shop details
   .then((removedProduct)=>{
-    res
+    console.log('removedProduct', removedProduct)
+    const shopId = removedProduct.shop._id
+    console.log('removedProduct.shop._id', removedProduct.shop._id)
+    Shop.findByIdAndUpdate(
+    shopId, 
+    {$pull: {products: id}}, {new:true})
+    .then(() =>{
+      res
     .status(202)
     .send(`Product ${removedProduct.brand} was removed`)
+    })
+    .catch((err) =>{
+      res
+      .status(500)
+      .json(err)
+    })
   })
   .catch((err) => {
     res
