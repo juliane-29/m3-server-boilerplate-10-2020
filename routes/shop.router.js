@@ -193,11 +193,15 @@ router.delete('/shops/:id', (req,res,next) =>{
     User.findByIdAndUpdate(userId, {$set: {shop: null, shopOwner:false}}
     , {new:true})
     .then((updatedUser) =>{
+          updatedUser.shopOwner = false; 
+          updatedUser.shop = null; 
           req.session.currentUser = updatedUser;
           console.log('updatedUser', updatedUser)
-          res
+          req.session.save((err) => {
+            res
           .status(201)
           .json(updatedUser);
+          })
     })
     .catch((err)=> {
         res
