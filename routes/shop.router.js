@@ -189,7 +189,6 @@ router.delete('/shops/:id', (req,res,next) =>{
   
     Shop.findByIdAndRemove(id)
     .then((removedShop)=>{
-    console.log('removedShop.owner', removedShop.owner)
     const userId = removedShop.owner
     User.findByIdAndUpdate(userId, {$set: {shop: null, shopOwner:false}}
     , {new:true})
