@@ -17,7 +17,7 @@ const shopSchema = new Schema({
     country: {type: String},
     backgrdoundImage: {type: String, default: ""},
     worldwideShipping: {type: Boolean, default: true},   
-    image: {type: String, default: "https://res.cloudinary.com/daj2fsogl/image/upload/v1607869177/example_ilzzv6.png"},
+    image: {type: String, default: ""},
     reviews: [{type: Schema.Types.ObjectId, ref: "Review"}],
     owner:  {type: Schema.Types.ObjectId, ref:"User"},
     products: [{type: Schema.Types.ObjectId, ref:"Product"}]
