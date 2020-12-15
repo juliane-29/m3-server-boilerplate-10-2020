@@ -41,7 +41,7 @@ router.post('/shops', (req, res, next) =>{
           country,
           backgroundImage,
           worldwideShipping, 
-          logo,
+          image,
           userId
             } = req.body; 
 
