@@ -96,7 +96,9 @@ router.get('/products/:id', (req,res,next) =>{
 
  Product
  .findById (id)
+ .populate('shop')
  .then((foundProduct) => {
+   console.log('foundProduct', foundProduct)
    res.status(200).json(foundProduct);
  })
  .catch((err) => {
