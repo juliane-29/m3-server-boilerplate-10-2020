@@ -4,6 +4,7 @@ const router  = express.Router();
 const uploader = require("./../config/cloudinary-setup");
 const Product = require("../models/product.model");
 const Shop = require("../models/shop.model");
+const User = require('../models/user.model');
 
 // Cloudinary
 

@@ -163,5 +163,23 @@ router.put('/user/:id', (req,res,next) =>{
   })
 })
 
-
+router.post('/wishlist', isLoggedIn, (req,res,next) => {
+  
+    const userId = req.session.currentUser._id; 
+    const {productId} = req.body; 
+  
+    User.findByIdAndUpdate(userId, {$push: {favoriteProducts: productId}}, {new: true})
+    .then((updatedUser) => {
+      res
+      .status(200)
+      .json(updatedUser)
+    })
+    .catch((err) => {
+      res
+      .status(500)
+      .json(err)
+    })
+  
+  })
+  
 module.exports = router;

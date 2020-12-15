@@ -9,7 +9,7 @@ const User = require("../models/user.model");
 const Product = require('../models/product.model');
 
 //Cloudinary File Upload
-router.post("/upload", uploader.single("logo"), (req, res, next) => {
+router.post("/upload", uploader.single("image"), (req, res, next) => {
     console.log("file is: ", req.file);
   
     if (!req.file) {
@@ -18,7 +18,7 @@ router.post("/upload", uploader.single("logo"), (req, res, next) => {
     }
     // get secure_url from the file object and save it in the
     // variable 'secure_url', but this can be any name, just make sure you remember to use the same in frontend
-    res.json({ secure_url: req.file.secure_url });
+    res.json({ secure_url_logo: req.file.secure_url });
   });
 
 // POST /api/shops
