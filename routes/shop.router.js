@@ -23,9 +23,6 @@ router.post("/upload", uploader.single("image"), (req, res, next) => {
 
 // POST /api/shops
 router.post('/shops', (req, res, next) =>{
-  //const userId = req.session.currentUser._id; 
-  //console.log('req.session.currentUser', req.session.currentUser)
-  //  req.session.currentUser.shopOwner / 
   const { shopName,
           firstName,
           lastName,
@@ -44,10 +41,6 @@ router.post('/shops', (req, res, next) =>{
           image,
           userId
             } = req.body; 
-
-    console.log('req.body', req.body)
-    console.log('userId', userId)
-
     Shop.create({...req.body,
                 owner: userId 
               })
@@ -144,30 +137,17 @@ router.put('/shops/:id', (req,res,next) => {
     } = req.body
     
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      res.status(400).json({ message: 'Specified id is not valid' });
+      res
+      .status(400)
+      .json({ message: 'Specified id is not valid' });
       return;
     }
   
-    Shop.findByIdAndUpdate(id, { shopName,
-                                  firstName,
-                                  lastName,
-                                  email,
-                                  phoneNumber,
-                                  description,
-                                  instagramAccount,
-                                  facebookAccount,
-                                  typeOfShop,
-                                  address,
-                                  zipCode,
-                                  city,
-                                  country,
-                                  backgroundImage,
-                                  worldwideShipping, 
-                                  logo }, {new: true})
-      .then(() => {
+    Shop.findByIdAndUpdate(id, { ...req.body }, {new: true})
+      .then((changedShop) => {
         res
         .status(200)
-        .send();
+        .send(changedShop);
       })
       .catch(err => {
         res
@@ -186,7 +166,7 @@ router.delete('/shops/:id', (req,res,next) =>{
       .json({message: "specified id does not exits"})
       return
     }
-  
+
     Shop.findByIdAndRemove(id)
     .then((removedShop)=>{
     const userId = removedShop.owner

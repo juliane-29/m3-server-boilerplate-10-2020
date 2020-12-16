@@ -6,7 +6,6 @@ const saltRounds = 10;
 const User = require("../models/user.model");
 const mongoose = require('mongoose');
 
-
 // HELPER FUNCTIONS
 // MIDDLEWARE FUNCTIONS TO VALIDATE
 const {
@@ -65,9 +64,7 @@ router.post('/login', isNotLoggedIn, validationLogin, (req, res, next) => {
         // If user with that username can't be found, respond with an error
         return next( createError(404)  );  // Not Found
       }
-
       const passwordIsValid = bcrypt.compareSync(password, user.password); //  true/false
-
       if (passwordIsValid) {
         // set the `req.session.currentUser`, to trigger creation of the session
         user.password = "*";
@@ -75,7 +72,6 @@ router.post('/login', isNotLoggedIn, validationLogin, (req, res, next) => {
         res
           .status(200)
           .json(user);
-
       }
       else {
         next( createError(401) ); // Unauthorized
@@ -94,7 +90,7 @@ router.get('/logout',  isLoggedIn, (req, res, next) => {
     }
 
     res
-      .status(204)  //  No Content
+      .status(204) 
       .send();
   } )
 })
@@ -106,80 +102,5 @@ router.get('/me', isLoggedIn, (req, res, next) => {
     .json(currentUserSessionData);
 
 })
-
-// GET 'auth/user' update user information
-router.get('/user/:id', isLoggedIn, (req,res,next) => {
-  const id = req.session.currentUser._id
-  console.log('id', id)
-  if(!mongoose.Types.ObjectId.isValid(id)){
-    res
-    .status(400)
-    .json({message: "specified id is not valid"})
-    return
-  }
-  User.findById( id )
-  .then((foundUser) =>{
-    res
-    .status(200)
-    .json(foundUser)
-  })
-  .catch((err) =>{
-    next( createError(err)  );
-  })
-})
-
-router.put('/user/:id', (req,res,next) =>{
-  const id = req.session.currentUser._id
-  const { username,
-          email,
-          firstName,
-          lastName, 
-          image,
-          bio} = req.body
-  console.log('req.body', req.body)
-
-  if(!mongoose.Types.ObjectId.isValid(id)){
-    res
-    .status(400)
-    .json({message: "specified id is not valid"})
-    return
-  }
-
-  User.findByIdAndUpdate(id, { username, 
-                               email,
-                               firstName,
-                               lastName, 
-                               image,
-                               bio}, {new: true} )
-  .then(() =>{
-    res
-    .status(200)
-    .send();
-  })
-  .catch((err) => {
-    res
-    .status(500)
-    .json(err)
-  })
-})
-
-router.post('/wishlist', isLoggedIn, (req,res,next) => {
-  
-    const userId = req.session.currentUser._id; 
-    const {productId} = req.body; 
-  
-    User.findByIdAndUpdate(userId, {$push: {favoriteProducts: productId}}, {new: true})
-    .then((updatedUser) => {
-      res
-      .status(200)
-      .json(updatedUser)
-    })
-    .catch((err) => {
-      res
-      .status(500)
-      .json(err)
-    })
-  
-  })
   
 module.exports = router;

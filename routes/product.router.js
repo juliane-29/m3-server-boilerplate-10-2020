@@ -7,7 +7,6 @@ const Shop = require("../models/shop.model");
 const User = require('../models/user.model');
 
 // Cloudinary
-
 router.post("/upload", uploader.single("image"), (req, res, next) => {
     console.log("file is: ", req.file);
   
@@ -169,9 +168,7 @@ router.delete('/products/:id', (req,res,next) =>{
   Product.findByIdAndRemove(id)
   .populate("shop") // get shop details
   .then((removedProduct)=>{
-    console.log('removedProduct', removedProduct)
     const shopId = removedProduct.shop._id
-    console.log('removedProduct.shop._id', removedProduct.shop._id)
     Shop.findByIdAndUpdate(
     shopId, 
     {$pull: {products: id}}, {new:true})
