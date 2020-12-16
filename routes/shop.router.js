@@ -196,7 +196,6 @@ router.delete('/shops/:id', (req,res,next) =>{
           updatedUser.shopOwner = false; 
           updatedUser.shop = null; 
           req.session.currentUser = updatedUser;
-          console.log('updatedUser', updatedUser)
           req.session.save((err) => {
             res
           .status(201)
