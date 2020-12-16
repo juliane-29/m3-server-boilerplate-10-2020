@@ -193,14 +193,17 @@ router.delete('/shops/:id', (req,res,next) =>{
     User.findByIdAndUpdate(userId, {$set: {shop: null, shopOwner:false}}
     , {new:true})
     .then((updatedUser) =>{
-          updatedUser.shopOwner = false; 
-          updatedUser.shop = null; 
-          req.session.currentUser = updatedUser;
-          req.session.save((err) => {
-            res
-          .status(201)
-          .json(updatedUser);
-          })
+      updatedUser.shopOwner = false; 
+      updatedUser.shop = null; 
+      req.session.currentUser = updatedUser
+    })
+    .then((x) => {
+    Product.deleteMany({shop: id }, {new:true})
+    .then((productsremove) => {
+      res
+      .status(201)
+      .json(productsremove)
+    })
     })
     .catch((err)=> {
         res
@@ -216,3 +219,4 @@ router.delete('/shops/:id', (req,res,next) =>{
 })
 
 module.exports = router;
+
