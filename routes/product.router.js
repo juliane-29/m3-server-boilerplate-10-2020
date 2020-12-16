@@ -130,18 +130,7 @@ router.put('/products/:id', (req,res,next) =>{
     return
   }
 
-  Product.findByIdAndUpdate(id, { brand, 
-                                  description, 
-                                  price, 
-                                  listPrice, 
-                                  shippingCost, 
-                                  condition, 
-                                  size, 
-                                  color, 
-                                  material, 
-                                  pattern, 
-                                  image, 
-                                  gender}, {new: true} )
+  Product.findByIdAndUpdate(id, { ...req.body}, {new: true} )
   .then(() =>{
     res
     .status(200)
