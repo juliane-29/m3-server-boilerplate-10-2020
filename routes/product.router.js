@@ -8,7 +8,7 @@ const User = require('../models/user.model');
 
 // Cloudinary
 router.post("/upload", uploader.single("image"), (req, res, next) => {
-    console.log("file is: ", req.file);
+    //console.log("file is: ", req.file);
   
     if (!req.file) {
       next(new Error("No file uploaded!"));
@@ -97,7 +97,7 @@ router.get('/products/:id', (req,res,next) =>{
  .findById (id)
  .populate('shop')
  .then((foundProduct) => {
-   console.log('foundProduct', foundProduct)
+   //console.log('foundProduct', foundProduct)
    res.status(200).json(foundProduct);
  })
  .catch((err) => {

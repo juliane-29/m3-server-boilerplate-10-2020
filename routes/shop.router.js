@@ -10,7 +10,7 @@ const Product = require('../models/product.model');
 
 //Cloudinary File Upload
 router.post("/upload", uploader.single("image"), (req, res, next) => {
-    console.log("file is: ", req.file);
+    //console.log("file is: ", req.file);
   
     if (!req.file) {
       next(new Error("No file uploaded!"));
@@ -94,12 +94,12 @@ router.get('/shops/:id', (req,res,next) =>{
   .findById(id)
   .populate('owner')
   .then((foundShop) => {
-    console.log('foundShop', foundShop)
-    console.log('foundShop.products', foundShop.products)
+    //console.log('foundShop', foundShop)
+    //console.log('foundShop.products', foundShop.products)
     foundShop.products.map((productObj, index) =>{
        Product.findById(productObj)
        .then((foundProducts) =>{
-        console.log('foundProducts', foundProducts)
+        //console.log('foundProducts', foundProducts)
          // receive products from the shopowner
     })
     })
